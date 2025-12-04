@@ -13,8 +13,11 @@ lifecycleViewmodelKtx = "2.10.0"
 lifecycleKtx = "2.9.2"
 navigationFragmentKtx = "2.9.6"
 navigationUiKtx = "2.9.6"
+activityKtx = "1.10.1"
 gms = "18.5.0"
 brvAdapter = "4.3.2"
+viewpager2 = "1.1.0"
+glideVersion = "5.0.5"
 
 
 
@@ -31,8 +34,12 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 play-services = { group = "com.google.android.gms", name = "play-services-base", version.ref = "gms" }
 rv-adapter = { group = "io.github.cymchad", name = "BaseRecyclerViewAdapterHelper4", version.ref = "brvAdapter" }
+viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glideVersion" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

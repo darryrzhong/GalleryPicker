@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="photo_next_step">下一步</string>
+    <string name="photo_video_size_tip">視頻大小超過最大限制</string>
+</resources>

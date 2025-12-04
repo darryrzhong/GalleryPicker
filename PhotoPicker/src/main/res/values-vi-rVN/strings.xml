@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="photo_next_step">Tiếp theo</string>
+    <string name="photo_video_size_tip">Kích thước video vượt quá giới hạn tối đa</string>
+</resources>

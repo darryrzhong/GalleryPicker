@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="photo_next_step">次へ</string>
+    <string name="photo_video_size_tip">動画サイズが最大制限を超えています</string>
+</resources>

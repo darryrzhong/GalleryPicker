@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="photo_next_step">Suivant</string>
+    <string name="photo_video_size_tip">La taille de la vidéo dépasse la limite maximale</string>
+</resources>
