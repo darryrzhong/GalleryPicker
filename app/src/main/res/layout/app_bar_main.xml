@@ -9,14 +9,14 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.GooglePay.AppBarOverlay">
+        android:theme="@style/Theme.Picker.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.GooglePay.PopupOverlay" />
+            app:popupTheme="@style/Theme.Picker.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

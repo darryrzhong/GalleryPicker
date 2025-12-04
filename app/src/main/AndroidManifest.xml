@@ -11,12 +11,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/icon_app"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GooglePay">
+        android:theme="@style/Theme.Picker">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.GooglePay.NoActionBar">
+            android:theme="@style/Theme.Picker.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
