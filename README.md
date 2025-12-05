@@ -5,7 +5,9 @@
 
 GalleryPicker is a modern image/video selection library based on the Android official [Photo Picker API](https://developer.android.google.cn/training/data-storage/shared/photo-picker). It focuses on providing **unified, concise, and multi-version compatible** media selection capabilities, supporting image/video selection from the gallery, taking photos, image cropping, compression, and more, without requiring any storage permissions to adapt to Android 5.0+ systems.
 
-<img src="./kotlin-picker.gif" alt="picker" width="412" height = "892"/>
+<div style="text-align:center">
+  <img src="./kotlin-picker.gif" alt="picker" width="206" height="443"/>
+</div>
 
 English | [简体中文](./README.zh_CN.md)
 
