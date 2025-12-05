@@ -3,33 +3,33 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![](https://jitpack.io/v/darryrzhong/GalleryPicker.svg)](https://jitpack.io/#darryrzhong/GalleryPicker)
 
-GalleryPicker is a modern image/video selection library based on the Android official [Photo Picker API](https://developer.android.google.cn/training/data-storage/shared/photo-picker). It focuses on providing **unified, concise, and multi-version compatible** media selection capabilities, supporting image/video selection from the gallery, taking photos, image cropping, compression, and more, without requiring any storage permissions to adapt to Android 5.0+ systems.
+GalleryPicker 是一个基于 Android 官方 [Photo Picker API](https://developer.android.google.cn/training/data-storage/shared/photo-picker) 封装的现代图片/视频选择库。它专注于提供**统一、简洁、可兼容多 Android 版本**的媒体选择能力，支持从相册获取图片/视频、拍照、图片裁剪、压缩等功能，且无需获取任何存储权限即可适配 Android 5.0+ 系统。
 
-English | [简体中文](./README.zh_CN.md)
+简体中文 | [English](./README.md)
 
-## Features
+## 功能特性
 
-* **No Permissions Required**: Uses the system standard Photo Picker, no need to request `READ_EXTERNAL_STORAGE` permission (Android 11+).
-* **Multi-Version Adaptation**:
-  * **Android 11 (API 30) +**: Uses the native Photo Picker.
-  * **Android 4.4 (API 19) - Android 10 (API 29)**: Automatically backports Photo Picker via Google Play Services, or falls back to the system file picker (`ACTION_OPEN_DOCUMENT`).
-* **Rich Functionality**:
-  * Supports single/multiple selection of images and videos.
-  * Supports taking photos and recording videos via camera.
-  * Supports image cropping (single selection only).
-  * Supports image compression (Luban algorithm).
-  * Supports mixed single selection (image or video).
-* **Easy to Use**: Chain calls, clear callbacks.
+* **无需权限**：使用系统标准 Photo Picker，无需申请 `READ_EXTERNAL_STORAGE` 权限（Android 11+）。
+* **多版本适配**：
+  * **Android 11 (API 30) +**：使用原生 Photo Picker。
+  * **Android 4.4 (API 19) - Android 10 (API 29)**：通过 Google Play 服务自动向后移植 Photo Picker，或回退到系统文件选择器 (`ACTION_OPEN_DOCUMENT`)。
+* **功能丰富**：
+  * 支持单选/多选图片和视频。
+  * 支持调用相机拍照和录制视频。
+  * 支持图片裁剪（仅限单选）。
+  * 支持图片压缩（Luban 算法）。
+  * 支持混合单选（图片或视频）。
+* **易于使用**：链式调用，回调清晰。
 
-## Integration Guide
+## 接入指南
 
-This document provides detailed instructions on how to integrate the GalleryPicker library into your Android application.
+本文档提供了将 GalleryPicker 库集成到您的 Android 应用程序中的详细指南。
 
-### 1. Add Dependency
+### 1. 添加依赖
 
-Add the JitPack repository and dependency to your project's `build.gradle` file.
+在您的项目 `build.gradle` 文件中添加 JitPack 仓库和依赖项。
 
-**Root `build.gradle`:**
+**根目录 `build.gradle`:**
 
 ```gradle
 allprojects {
@@ -40,43 +40,43 @@ allprojects {
 }
 ```
 
-**App Module `build.gradle`:**
+**App 模块 `build.gradle`:**
 
 ```gradle
 dependencies {
-    implementation 'com.github.darryrzhong:GalleryPicker:1.0.0' // Please check for the latest version
+    implementation 'com.github.darryrzhong:GalleryPicker:1.0.0' // 请检查最新版本
 }
 ```
 
-### 2. Initialize Global Configuration (Optional)
+### 2. 初始化全局配置 (可选)
 
-You can configure global settings in your Application. If not set, default configuration will be used.
+你可以在 Application 中进行全局配置，如果不设置则使用默认配置。
 
 ```kotlin
-GalleryPickerOption.setColorPrimary(R.color.purple_200) // Set app primary color
-    .setTextColorPrimary(R.color.white) // Set text color for app primary color
-    .maxItems(1) // Set max selection count: 1 for single, >1 for multiple
-    .isCompress(true) // Default image compression
-    .ignoreSize(100)  // Do not compress files smaller than 100kb
-    .quality(75)  // Compression quality, default 75%
-    .isCrop(false) // Whether to crop image, default false
-    .maxVideoSize(15) // Max video file size, default 15Mb
-    .debug(false)  // Debug logging
+GalleryPickerOption.setColorPrimary(R.color.purple_200) // 设置app主题色
+    .setTextColorPrimary(R.color.white) // 设置app主题色搭配字体色
+    .maxItems(1) // 设置最大选择数量  1 单选  >1多选
+    .isCompress(true) // 默认图片压缩
+    .ignoreSize(100)  // 小于100kb文件不进行压缩
+    .quality(75)  // 压缩比例 默认75%
+    .isCrop(false) // 是否进行图片裁剪  默认不裁剪
+    .maxVideoSize(15) // 最大选择视频文件大小  默认15Mb
+    .debug(false)  // 日志调试
 ```
 
-### 3. Permission Configuration
+### 3. 权限配置
 
-**Special Note**: Using Photo Picker to select media files does not require any storage permissions. However, if you need to use **Camera** to take photos or record videos, although Android 11+ invoking system camera doesn't need permission, if your app manifest declares camera permission, you must request it at runtime.
+**特别提醒**：使用 Photo Picker 选择媒体文件不需要任何存储权限。但是，如果需要使用**相机拍照**或**录制视频**，虽然 Android 11+ 调用系统相机不需要权限，但如果你的应用清单中声明了相机权限，则必须在运行时获取该权限。
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
 ```
 
-### 4. Configure FileProvider (Only for Taking Photos/Videos)
+### 4. 配置 FileProvider (仅拍照/录像需要)
 
-To allow the camera app to save captured photos/videos to your app's private directory, you need to configure `FileProvider`.
+为了让相机应用能够将拍摄的照片/视频保存到你的应用私有目录，需要配置 `FileProvider`。
 
-1. Add `provider` in `AndroidManifest.xml`:
+1. 在 `AndroidManifest.xml` 中添加 `provider`：
 
 ```xml
 <provider
@@ -90,7 +90,7 @@ To allow the camera app to save captured photos/videos to your app's private dir
 </provider>
 ```
 
-2. Create `file_paths.xml` in `res/xml` directory:
+2. 在 `res/xml` 目录下创建 `file_paths.xml`：
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -103,13 +103,13 @@ To allow the camera app to save captured photos/videos to your app's private dir
 </resources>
 ```
 
-## Advanced Usage
+## 进阶使用
 
-Use `GalleryPickerHelper` for media selection without worrying about page transitions and lifecycle management.
+使用 `GalleryPickerHelper` 进行媒体选择，无需关心页面跳转及生命周期管理。
 
-### 1. Launch Parameter Configuration
+### 1. 启动参数配置
 
-Launch parameter configuration has higher priority than global default configuration.
+启动参数的优先级高于全局默认配置。
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -117,16 +117,16 @@ GalleryPickerHelper.newInstance()
     .isCrop(true)
     .ignoreSize(100) // kb
     .quality(75) // 75%
-    .maxItems(9) // Single or Multiple
-    .maxVideoSize(15) // Video file size limit in MB
+    .maxItems(9) // 单选 or 多选
+    .maxVideoSize(15) // 视频文件大小限制 MB
     .launchMediaPicker(this, MediaType.IMAGE, object : MediaResultCallback {
         override fun onMediaResult(mediaFiles: List<MediaData>) {
-            // Handle result
+            // 处理结果
         }
     })
 ```
 
-### 2. Gallery Selection (Single)
+### 2. 相册获取 (单选)
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -137,14 +137,14 @@ GalleryPickerHelper.newInstance()
                 mediaFiles.firstOrNull()?.let {
                     val paths = arrayListOf<String>()
                     paths.add(it.filePath)
-                    // Preview image
+                    // 预览图片
                     GalleryPickerHelper.toPreViewImage(requireActivity(), 0, paths)
                 }
             }
         })
 ```
 
-### 3. Gallery Selection (Multiple)
+### 3. 相册获取 (多选)
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -164,9 +164,9 @@ GalleryPickerHelper.newInstance()
         })
 ```
 
-### 4. Gallery Selection (With Crop)
+### 4. 相册获取 (带裁剪)
 
-Image cropping only supports **Single Selection Mode**.
+图片裁剪只支持**单选模式**。
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -175,7 +175,7 @@ GalleryPickerHelper.newInstance()
         requireActivity(),
         MediaType.IMAGE, object : MediaResultCallback {
             override fun onMediaResult(mediaFiles: List<MediaData>) {
-                // Returns the cropped image path
+                // 返回的是裁剪后的图片路径
                 mediaFiles.firstOrNull()?.let {
                     val paths = arrayListOf<String>()
                     paths.add(it.filePath)
@@ -185,9 +185,9 @@ GalleryPickerHelper.newInstance()
         })
 ```
 
-### 5. Take Photo
+### 5. 拍照选择
 
-Before calling take photo, ensure camera permission is handled (if declared in manifest).
+调用拍照前，请确保已处理好相机权限（如果清单文件中声明了）。
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -204,9 +204,9 @@ GalleryPickerHelper.newInstance()
         })
 ```
 
-### 6. Video Selection
+### 6. 视频选择
 
-Video selection supports setting max file size limit (default 15MB). Currently only supports single selection.
+视频选择支持设置最大文件大小限制（默认 15MB）。目前仅支持单选。
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -221,9 +221,9 @@ GalleryPickerHelper.newInstance()
         })
 ```
 
-### 7. Mixed Selection (Image & Video)
+### 7. 图片 & 视频混合选择
 
-Supports displaying both images and videos, but user can only select one type (Single Selection).
+支持同时展示图片和视频，但用户只能选择其中一种类型（单选）。
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -244,7 +244,7 @@ GalleryPickerHelper.newInstance()
         })
 ```
 
-### 8. Record Video
+### 8. 拍摄视频
 
 ```kotlin
 GalleryPickerHelper.newInstance()
@@ -259,36 +259,36 @@ GalleryPickerHelper.newInstance()
         })
 ```
 
-### 9. Helper Functions
+### 9. 辅助功能
 
-* **Image Preview** (Local paths only):
+* **图片预览** (仅支持本地路径):
 
     ```kotlin
     GalleryPickerHelper.toPreViewImage(this, 0, arrayListOf("path1", "path2"))
     ```
 
-* **Video Preview** (Local paths only):
+* **视频预览** (仅支持本地路径):
 
     ```kotlin
     GalleryPickerHelper.toPreViewVideo(this, "video_path")
     ```
 
-* **Check Device Compatibility**:
+* **检查设备兼容性**:
 
     ```kotlin
     GalleryPickerHelper.isPhotoPickerAvailable(this)
     ```
 
-## Device Compatibility
+## 设备兼容性说明
 
-Photo Picker is available on devices that meet the following criteria:
+照片选择器适用于符合以下条件的设备：
 
-* Running **Android 11 (API 30)** or higher.
-* Receives changes to Modular System Components via Google System Updates.
+* 搭载 **Android 11 (API 30)** 或更高版本。
+* 通过 Google 系统更新接收对模块化系统组件的更改。
 
-For devices running **Android 4.4 (API 19) to Android 10 (API 29)**, and Android Go devices running Android 11 or 12 that support Google Play Services, Google Play Services will automatically install the backported Photo Picker module.
+对于搭载 **Android 4.4 (API 19) 到 Android 10 (API 29)** 的设备，以及搭载 Android 11 或 12 且支持 Google Play 服务的 Android Go 设备，Google Play 服务会自动安装向后移植的照片选择器模块。
 
-To trigger Google Play services to install the backported photo picker module, add the following entry to the `<application>` tag in your app manifest:
+如需通过 Google Play 服务自动安装向后移植的照片选择器模块，请将以下条目添加到应用清单文件的 <application> 标记中:
 
 ```xml
 <!-- Trigger Google Play services to install the backported photo picker module. -->
@@ -303,4 +303,4 @@ To trigger Google Play services to install the backported photo picker module, a
 </service>
 ```
 
-If Photo Picker is unavailable, this library will automatically degrade to call `ACTION_OPEN_DOCUMENT` intent, using the system file manager for media selection (in this case, the system ignores the maximum selection count limit).
+如果照片选择器不可用，本库会自动降级调用 `ACTION_OPEN_DOCUMENT` intent，以系统文件管理器的方式进行媒体选择（此时系统会忽略最大选择数量限制）。
