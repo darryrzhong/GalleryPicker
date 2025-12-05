@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(projects.photoPicker)
+//    implementation(libs.gallery.picker)
     implementation(libs.rv.adapter)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

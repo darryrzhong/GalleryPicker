@@ -18,6 +18,7 @@ gms = "18.5.0"
 brvAdapter = "4.3.2"
 viewpager2 = "1.1.0"
 glideVersion = "5.0.5"
+galleryPicker = "1.0.0"
 
 
 
@@ -39,6 +40,7 @@ play-services = { group = "com.google.android.gms", name = "play-services-base",
 rv-adapter = { group = "io.github.cymchad", name = "BaseRecyclerViewAdapterHelper4", version.ref = "brvAdapter" }
 viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glideVersion" }
+gallery-picker = {group = "com.github.darryrzhong",name = "GalleryPicker", version.ref = "galleryPicker"}
 
 
 [plugins]
