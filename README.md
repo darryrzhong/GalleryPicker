@@ -3,11 +3,11 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![](https://jitpack.io/v/darryrzhong/GalleryPicker.svg)](https://jitpack.io/#darryrzhong/GalleryPicker)
 
-GalleryPicker is a modern image/video selection library based on the Android official [Photo Picker API](https://developer.android.google.cn/training/data-storage/shared/photo-picker). It focuses on providing **unified, concise, and multi-version compatible** media selection capabilities, supporting image/video selection from the gallery, taking photos, image cropping, compression, and more, without requiring any storage permissions to adapt to Android 5.0+ systems.
-
 <p align="center">
   <img src="./kotlin-picker.gif" alt="picker" width="206" height="443"/>
 </p>
+
+GalleryPicker is a modern image/video selection library based on the Android official [Photo Picker API](https://developer.android.google.cn/training/data-storage/shared/photo-picker). It focuses on providing **unified, concise, and multi-version compatible** media selection capabilities, supporting image/video selection from the gallery, taking photos, image cropping, compression, and more, without requiring any storage permissions to adapt to Android 5.0+ systems.
 
 English | [简体中文](./README.zh_CN.md)
 
@@ -168,6 +168,11 @@ GalleryPickerHelper.newInstance()
         })
 ```
 
+<p align="center">
+  <img src="./demo.gif" alt="picker" width="206" height="443"/>
+</p>
+
+
 ### 4. Gallery Selection (With Crop)
 
 Image cropping only supports **Single Selection Mode**.
@@ -308,3 +313,6 @@ To trigger Google Play services to install the backported photo picker module, a
 ```
 
 If Photo Picker is unavailable, this library will automatically degrade to call `ACTION_OPEN_DOCUMENT` intent, using the system file manager for media selection (in this case, the system ignores the maximum selection count limit).
+
+## demo
+[demo example](./app-release.apk)

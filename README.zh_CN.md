@@ -3,6 +3,10 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![](https://jitpack.io/v/darryrzhong/GalleryPicker.svg)](https://jitpack.io/#darryrzhong/GalleryPicker)
 
+<p align="center">
+  <img src="./kotlin-picker.gif" alt="picker" width="206" height="443"/>
+</p>
+
 GalleryPicker 是一个基于 Android 官方 [Photo Picker API](https://developer.android.google.cn/training/data-storage/shared/photo-picker) 封装的现代图片/视频选择库。它专注于提供**统一、简洁、可兼容多 Android 版本**的媒体选择能力，支持从相册获取图片/视频、拍照、图片裁剪、压缩等功能，且无需获取任何存储权限即可适配 Android 5.0+ 系统。
 
 简体中文 | [English](./README.md)
@@ -163,6 +167,10 @@ GalleryPickerHelper.newInstance()
             }
         })
 ```
+<p align="center">
+  <img src="./demo.gif" alt="picker" width="206" height="443"/>
+</p>
+
 
 ### 4. 相册获取 (带裁剪)
 
@@ -304,3 +312,6 @@ GalleryPickerHelper.newInstance()
 ```
 
 如果照片选择器不可用，本库会自动降级调用 `ACTION_OPEN_DOCUMENT` intent，以系统文件管理器的方式进行媒体选择（此时系统会忽略最大选择数量限制）。
+
+## demo
+[demo示例](./app-release.apk)
