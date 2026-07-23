@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 import java.util.Locale
 import kotlin.random.Random
 
@@ -344,50 +343,54 @@ class GalleryPickerHelper {
                             tempFiles.add(file)
                         }
                     }
-                    if (tempFiles.isNotEmpty()) {
-                        if (isCompress) {
-                            //批量压缩
-                            Utils.log("Start compression }")
-                            val result = Luban(activity).load(tempFiles).ignoreSize(ignoreSize)
-                                .quality(quality).keepAlpha(false).keepSize(false).launch()
-                            if (result.isNotEmpty()) {
-                                val filePaths = mutableListOf<String>()
-                                val mediaFiles = mutableListOf<MediaData>()
-                                result.forEach { compressResult ->
-                                    if (compressResult is CompressResult.Success) {
-                                        filePaths.add(compressResult.file?.path ?: "")
-                                        mediaFiles.add(
-                                            MediaData(
-                                                MimeType.IMAGE,
-                                                compressResult.file?.path ?: ""
-                                            )
-                                        )
-                                    }
-                                }
-                                Utils.log("Compression successful  -> path:  $filePaths")
-                                block?.onResult(filePaths)
-                                block?.onMediaResult(mediaFiles)
-                                activity.finish()
-                                Utils.log("MediaResultCallback  result  path: $filePaths")
-                            }
-                        } else {
+                    if (tempFiles.isEmpty()) {
+                        block?.onCancel()
+                        activity.finish()
+                        Utils.log("PickVisual fail -> No valid cached file")
+                        return@launch
+                    }
+                    if (isCompress) {
+                        //批量压缩
+                        Utils.log("Start compression }")
+                        val result = Luban(activity).load(tempFiles).ignoreSize(ignoreSize)
+                            .quality(quality).keepAlpha(false).keepSize(false).launch()
+                        if (result.isNotEmpty()) {
                             val filePaths = mutableListOf<String>()
                             val mediaFiles = mutableListOf<MediaData>()
-                            tempFiles.forEach { file ->
-                                filePaths.add(file.path)
-                                mediaFiles.add(
-                                    MediaData(
-                                        MimeType.IMAGE,
-                                        file.path
+                            result.forEach { compressResult ->
+                                if (compressResult is CompressResult.Success) {
+                                    filePaths.add(compressResult.file?.path ?: "")
+                                    mediaFiles.add(
+                                        MediaData(
+                                            MimeType.IMAGE,
+                                            compressResult.file?.path ?: ""
+                                        )
                                     )
-                                )
+                                }
                             }
+                            Utils.log("Compression successful  -> path:  $filePaths")
                             block?.onResult(filePaths)
                             block?.onMediaResult(mediaFiles)
                             activity.finish()
                             Utils.log("MediaResultCallback  result  path: $filePaths")
-
                         }
+                    } else {
+                        val filePaths = mutableListOf<String>()
+                        val mediaFiles = mutableListOf<MediaData>()
+                        tempFiles.forEach { file ->
+                            filePaths.add(file.path)
+                            mediaFiles.add(
+                                MediaData(
+                                    MimeType.IMAGE,
+                                    file.path
+                                )
+                            )
+                        }
+                        block?.onResult(filePaths)
+                        block?.onMediaResult(mediaFiles)
+                        activity.finish()
+                        Utils.log("MediaResultCallback  result  path: $filePaths")
+
                     }
                 }
             }
@@ -586,8 +589,10 @@ class GalleryPickerHelper {
             uris.add(uri)
             // 在 IO 线程执行
             val files = copyFilesToCache(activity, uris)
+            var hasResult = false
             files.forEach { file ->
                 if (file != null && file.exists()) {
+                    hasResult = true
                     val list = mutableListOf<String>()
                     val mediaFiles = mutableListOf<MediaData>()
                     mediaFiles.add(MediaData(MimeType.VIDEO, file.path))
@@ -597,6 +602,11 @@ class GalleryPickerHelper {
                     activity.finish()
                     Utils.log("MediaResultCallback  result  path: $list")
                 }
+            }
+            if (!hasResult) {
+                block?.onCancel()
+                activity.finish()
+                Utils.log("PickVisual video fail -> No valid cached file")
             }
         }
     }
@@ -612,8 +622,10 @@ class GalleryPickerHelper {
         activity.lifecycleScope.launch() {
             // 在 IO 线程执行
             val files = copyFilesToCache(activity, uris)
+            var hasResult = false
             files.forEach { file ->
                 if (file != null && file.exists()) {
+                    hasResult = true
                     if (isCompress) {
                         Utils.log("Start compression }")
                         val result = Luban(activity).load(file).ignoreSize(ignoreSize)
@@ -625,6 +637,11 @@ class GalleryPickerHelper {
                     }
                 }
             }
+            if (!hasResult) {
+                block?.onCancel()
+                activity.finish()
+                Utils.log("PickVisual image fail -> No valid cached file")
+            }
         }
     }
 
@@ -632,24 +649,29 @@ class GalleryPickerHelper {
         return uris.map { uri ->
             flow {
                 val contentResolver: ContentResolver = context.contentResolver
-                val inputStream: InputStream? = contentResolver.openInputStream(uri)
                 try {
                     val cacheDir =
                         File(context.cacheDir.absolutePath, "/temp_photo").also { it.mkdirs() }
                     val random = Random.nextInt(1000)
                     val suffix = resolveCacheFileSuffix(contentResolver, uri)
                     val cacheFile = File(cacheDir, "${System.currentTimeMillis()}$random.$suffix")
-                    FileOutputStream(cacheFile).use { outputStream ->
-                        inputStream?.copyTo(outputStream)
+                    val inputStream = contentResolver.openInputStream(uri)
+                    if (inputStream == null) {
+                        emit(null)
+                        Utils.log("File copy creation failed   input stream is null uri: $uri")
+                        return@flow
+                    }
+                    inputStream.use { input ->
+                        FileOutputStream(cacheFile).use { outputStream ->
+                            input.copyTo(outputStream)
+                        }
                     }
                     emit(cacheFile) // 复制成功，发射新文件
                     Utils.log("File copy success   file: ${cacheFile.path}")
                 } catch (e: Exception) {
                     e.printStackTrace()
                     emit(null) // 复制失败，发射 null
-                    Utils.log("File copy creation failed   uri: $uri")
-                } finally {
-                    inputStream?.close() // 确保关闭 InputStream
+                    Utils.log("File copy creation failed   uri: $uri error: ${e.message}")
                 }
             }.flowOn(Dispatchers.IO)
         }.map { flow ->
