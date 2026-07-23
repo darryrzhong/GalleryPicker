@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
+import android.webkit.MimeTypeMap
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -35,6 +36,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.util.Locale
 import kotlin.random.Random
 
 /**
@@ -635,7 +637,7 @@ class GalleryPickerHelper {
                     val cacheDir =
                         File(context.cacheDir.absolutePath, "/temp_photo").also { it.mkdirs() }
                     val random = Random.nextInt(1000)
-                    val suffix = if (mMediaType == MediaType.VIDEO) "mp4" else "jpg"
+                    val suffix = resolveCacheFileSuffix(contentResolver, uri)
                     val cacheFile = File(cacheDir, "${System.currentTimeMillis()}$random.$suffix")
                     FileOutputStream(cacheFile).use { outputStream ->
                         inputStream?.copyTo(outputStream)
@@ -653,6 +655,60 @@ class GalleryPickerHelper {
         }.map { flow ->
             flow.toList() // 收集每个 `Flow` 结果到列表
         }.flatten() // 扁平化为一个 `List<File?>`
+    }
+
+    private fun resolveCacheFileSuffix(contentResolver: ContentResolver, uri: Uri): String {
+        val mimeType = runCatching { contentResolver.getType(uri) }.getOrNull()
+        val mimeSuffix = mimeType?.let {
+            MimeTypeMap.getSingleton().getExtensionFromMimeType(it)
+        }
+        if (!mimeSuffix.isNullOrBlank()) {
+            return normalizeCacheFileSuffix(mimeSuffix)
+        }
+        val displayNameSuffix = resolveDisplayNameSuffix(contentResolver, uri)
+        if (displayNameSuffix != null) {
+            return displayNameSuffix
+        }
+        val normalizedMimeType = mimeType?.lowercase(Locale.ROOT)
+        return when {
+            normalizedMimeType?.startsWith("video/") == true -> "mp4"
+            normalizedMimeType?.startsWith("image/") == true -> "jpg"
+            else -> fallbackCacheFileSuffix()
+        }
+    }
+
+    private fun resolveDisplayNameSuffix(contentResolver: ContentResolver, uri: Uri): String? {
+        return runCatching {
+            contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+                ?.use { cursor ->
+                    if (!cursor.moveToFirst()) {
+                        return@use null
+                    }
+                    val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (displayNameIndex < 0) {
+                        return@use null
+                    }
+                    val displayName = cursor.getString(displayNameIndex) ?: return@use null
+                    val suffix = displayName.substringAfterLast('.', "")
+                    if (suffix.isNotBlank()) {
+                        normalizeCacheFileSuffix(suffix)
+                    } else {
+                        null
+                    }
+                }
+        }.getOrNull()
+    }
+
+    private fun fallbackCacheFileSuffix(): String {
+        return if (mMediaType == MediaType.VIDEO || mMediaType == MediaType.CAPTURE_VIDEO) {
+            "mp4"
+        } else {
+            "jpg"
+        }
+    }
+
+    private fun normalizeCacheFileSuffix(suffix: String): String {
+        return suffix.trim().trimStart('.').lowercase(Locale.ROOT)
     }
 
     /**
